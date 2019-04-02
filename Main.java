@@ -4,7 +4,7 @@ class Main {
 //  public static final long[] numbersToTest = {-10l, 0l, 1l, 2l, 3l, 4l, 9l, 12l, 3169l, 10000l};
 //  public static final long[] numbersToTest = {5915587277l};
 //  public static final long[] numbersToTest = {3169l};
-  public static final long[] numbersToTest = {499017086208l, 676126714752l, 5988737349l, 578354589l};
+  public static final long[] numbersToTest = {15, 26, 1, 5, 3, 7, 5, 6, -2, -3, 6, 9};
   
   public static void main(String[] args) {
     // for (int i=0; i<numbersToTest.length; i++) {
@@ -30,9 +30,16 @@ class Main {
     //   System.out.println("  Elapsed time: " + (endTime - startTime));
     // }
 
+    // for (int i=0; i<numbersToTest.length-1; i+=2) {
+    //   long startTime = System.nanoTime();
+    //   System.out.print("Highest common factor of (" + numbersToTest[i] + ", " + numbersToTest[i+1] + ") = " + getHighestCommonFactor(numbersToTest[i], numbersToTest[i+1]));
+    //   long endTime = System.nanoTime();
+    //   System.out.println("  Elapsed time: " + (endTime - startTime));
+    // }
+
     for (int i=0; i<numbersToTest.length-1; i+=2) {
       long startTime = System.nanoTime();
-      System.out.print("Highest common factor of (" + numbersToTest[i] + ", " + numbersToTest[i+1] + ") = " + getHighestCommonFactor(numbersToTest[i], numbersToTest[i+1]));
+      System.out.print("Inverse of (" + numbersToTest[i] + " mod " + numbersToTest[i+1] + ") = " + getModularInverse(numbersToTest[i], numbersToTest[i+1]));
       long endTime = System.nanoTime();
       System.out.println("  Elapsed time: " + (endTime - startTime));
     }
@@ -135,22 +142,33 @@ Improve the efficiency of the previous function in two ways:
         return x;
     }
     
-    // public static long getModularInverse(long num, long modulus) {
-    //     // num and modulus must be co-prime
-    //     if (getHighestCommonFactor(num, modulus) != 1)
-    //         return 0;
+    public static long getModularInverse(long num, long modulus) {
+        // num and modulus must be co-prime
+        if (getHighestCommonFactor(num, modulus) != 1)
+            return 0;
             
-    //     long r0 = num;
-    //     long r1 = modulus;
-    //     long s0 = 1l;
-    //     long s1 = 0l;
-    //     long t0 = 0l;
-    //     long t1 = 1l;
+        long r0 = modulus;
+        long r1 = num;
+        long t0 = 0l;
+        long t1 = 1l;
         
-    //     do {
-    //         long quotient = r0 mod r1;
-    //     } while (r1 != 0);
+        long inverseMod = t1;
+        long remainder = r1;
+
+        while (remainder != 1l) {
+          long quotient = r0 / r1; // truncated to whole number
+System.out.println("\tquotient of " + r0 + "/" + r1 + "=" + quotient);          
+          remainder = r0 % r1;
+System.out.println("\tremainder of " + r0 + "%" + r1 + "=" + remainder);
+          inverseMod = t0 - (quotient * t1);
+System.out.println("\tinverseMod of " + t0 + "-(" + quotient + "*" + t1 + ")=" + inverseMod);
+
+          r0 = r1;
+          r1 = remainder;
+          t0 = t1;
+          t1 = inverseMod;
+        } 
         
-    //     return s1;
-    // }
+        return (inverseMod >= 0 ? inverseMod : inverseMod + modulus);
+    }
 }
