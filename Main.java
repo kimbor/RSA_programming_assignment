@@ -3,7 +3,6 @@ Kim Rader
 COMP-530 Cryptographic Systems Security
 University of Nicosia
 March 4, 2019
-
 Assignment 1 - The RSA Algorithm
 On GitHub as https://github.com/kimbor/RSA_programming_assignment
 *******************************************************************************/
@@ -11,20 +10,21 @@ On GitHub as https://github.com/kimbor/RSA_programming_assignment
 import java.util.*;
 import java.math.BigInteger;
 
-class Main
-{
-//  public static final long[] numbersToTest = {5915587277l};
-//  public static final long[] numbersToTest = {3169l};
-  public static final long[] numbersToTest =
-    { 15, 26, 1, 5, 3, 7, 5, 6, -2, -3, 6, 9, 342952340l, 4230493243l };
+class Main {
+  // Numbers used in tests for Questions 1, 2, 3.
+  // note: last character of 5915587277l is the letter 'l' to cast it 
+  // as a long since the number is too big to fit in an int
+  public static final long[] numbersToTest = { -3, 2, 5, 9, 12, 3169, 10000 };
+//    long[] numbersToTest = { -3, 2, 5, 9, 12, 3169, 10000, 5915587277l };
+
+  // Numbers used in tests for Questions 4 and 5
+  // note: last character of larger number is the letter 'l' to cast them as longs
+  public static final long[][] pairsOfNumbersToTest = { 
+//    {15, 26}, {1, 5}, {5, 6}, {6, 9} };
+    {15, 26}, {1, 5}, {6, 9},  {342952340l, 4230493243l}, {499017086208l, 676126714752l}, {5988737349l, 578354589l} };
+// {342952340l, 4230493243l},
 
   public static void main (String[]args) {
-    // Numbers used in tests for Questions 1, 2, 3.
-    // note: last character of 5915587277l is the letter 'l' to cast it 
-    // as a long since the number is too big to fit in an int
-    long[] numbersToTest = { 2, 5, 9, 12, 3169, 10000 };
-//    long[] numbersToTest = { 2, 5, 9, 12, 3169, 10000, 5915587277l };
-
     // Test for Question 1
     System.out.println("\nQuestion 1: Test for primeness using trial and error method.");
     for (int i = 0; i < numbersToTest.length; i++) {
@@ -54,19 +54,31 @@ class Main
       System.out.println("  Elapsed time: " + (endTime - startTime));
     }
 
-    // for (int i=0; i<numbersToTest.length-1; i+=2) {
-    //   long startTime = System.nanoTime();
-    //   System.out.print("Highest common factor of (" + numbersToTest[i] + ", " + numbersToTest[i+1] + ") = " + getHighestCommonFactor(numbersToTest[i], numbersToTest[i+1]));
-    //   long endTime = System.nanoTime();
-    //   System.out.println("  Elapsed time: " + (endTime - startTime));
-    // }
+    // Test for Question 4
+    System.out.println("\nQuestion 4: Implement Euclid’s algorithm "
+      + " and compute hcf(499017086208, 676126714752), hcf(5988737349, 578354589)");
+    for (int i=0; i<pairsOfNumbersToTest.length; i++) {
+      long startTime = System.nanoTime();
+      System.out.print("Highest common factor of (" + pairsOfNumbersToTest[i][0] + ", " + pairsOfNumbersToTest[i][1] + ") = ");
+      System.out.print(getHighestCommonFactor(pairsOfNumbersToTest[i][0], pairsOfNumbersToTest[i][1]));
+      long endTime = System.nanoTime();
+      System.out.println("  Elapsed time: " + (endTime - startTime));
+    }
 
-    // for (int i=0; i<numbersToTest.length-1; i+=2) {
-    //   long startTime = System.nanoTime();
-    //   System.out.print("Inverse of (" + numbersToTest[i] + " mod " + numbersToTest[i+1] + ") = " + getModularInverse(numbersToTest[i], numbersToTest[i+1]));
-    //   long endTime = System.nanoTime();
-    //   System.out.println("  Elapsed time: " + (endTime - startTime));
-    // }
+    // Test for Question 5
+    System.out.println("\nQuestion 5: Explain how Euclid’s algorithm might help you to find multiplicative inverses and implement it. "
+      + "Solve for x the linear congruence 342952340x=1 mod4230493243");
+    for (int i=0; i<pairsOfNumbersToTest.length; i++) {
+      long startTime = System.nanoTime();
+      System.out.print(pairsOfNumbersToTest[i][0] + "^(-1) mod " + pairsOfNumbersToTest[i][1] + " = ");
+      long modInverse = getModularInverse(pairsOfNumbersToTest[i][0], pairsOfNumbersToTest[i][1]);
+      if (modInverse == 0) 
+        System.out.print("does not exist");
+      else
+        System.out.print(modInverse);
+      long endTime = System.nanoTime();
+      System.out.println("  Elapsed time: " + (endTime - startTime));
+    }
 
     // long[] numbersToTest = {31, 2773, 17, 157};
     // for (int i=0; i<numbersToTest.length-1; i+=4) {
@@ -157,38 +169,51 @@ class Main
   /**
    * Question 3 
    * Based on the function built in Question 2, implement a function that returns 
-   * the factorisation of any composite number. 
+   * the factorisation of any composite number.
+   * Factorisation means of the form p1^a1 * p2^a2 *....*pn^an etc.
+   * 
+   * This method calls getPrimeFactors(long) to find the list of factors, 
+   * then formats them into a pretty string.
    */
   public static String getPrimeFactorization(long num) {
-    // String result = "";
-      
-    // List<Long> factors = getPrimeFactors(num);
+    List<Long> factors = getPrimeFactors(num);
+    if (factors.size() == 0)    // if no factors found (because num <=1)
+        return "";              // return empty string
     
-    // Long curFactor = factors.get(curIndex);
-    // int firstIndex = 
-    // int curFactorCount = factors.subList(curIndex, factors.lastIndexOf(curFactor) + 1).size();
-    
-    // long prevFactor = 0;
-    // int curFactorCount = 0;   // how many times this factor appears in factorization of num
-    // for (Long factor : factors) {
-    //     long curFactor = factor.longValue;
-        
-      return getPrimeFactors(num).toString();
+    // we get each factor in the factors List
+    // we find its first index and its last index
+    // and use those to calculate the number of times the factor appears
+    // then append "[factor]^[factorCount] * " to the result string
+    StringBuilder result = new StringBuilder();
+    int firstIndexOfFactor = 0;
+    while (firstIndexOfFactor < factors.size()) {
+        Long curFactor = factors.get(firstIndexOfFactor);
+        int lastIndexOfFactor = factors.lastIndexOf(curFactor);
+        int curFactorCount = lastIndexOfFactor - firstIndexOfFactor + 1;
+        result.append(curFactor + "^" + curFactorCount + " * ");
+        firstIndexOfFactor = lastIndexOfFactor + 1;
+    }
+    result = result.delete(result.length()-3, result.length());    // trim trailing " * "
+    return result.toString();
   }
   
   /**
    * Helper method for Question 3, also used by __ below.
+   * Finds the prime factors of num;
+   * If a factor occurs more than once, it will be returned more than once.
+   * e.g. getPrimeFactors(12) => [2, 2, 3];
+   * If num is less than 2, returns an empty list.
    */
-  public static List <Long> getPrimeFactors (long num) {
-    List <Long> knownFactors = new ArrayList ();
+  private static List <Long> getPrimeFactors (long num) {
+    List<Long> knownFactors = new ArrayList();
 
     // negative numbers, 0, and 1 are not considered composite by definition
     if (num <= 1)
-      return knownFactors;
+      return knownFactors;  // return empty list
 
     long curNum = num;
     long factor;
-    while ((factor = getFirstPrimeFactor (curNum)) != 0) {
+    while ((factor = getFirstPrimeFactor(curNum)) != 0) {
 	    knownFactors.add (factor);
 	    curNum = curNum / factor;
     }
@@ -197,40 +222,62 @@ class Main
     return knownFactors;
   }
 
-  private static long getFirstPrimeFactor (long num)
-  {
-    for (long potentialFactor = 2; (potentialFactor * potentialFactor) <= num;
-	 potentialFactor++)
-      {
-	if (isPrime (potentialFactor) && (num % potentialFactor == 0))
-	  return potentialFactor;
-      }
-    return 0;
+    /**
+     * Helper method used by getPrimeFactor(long), above.
+     * Finds the smallest prime factor of num.
+     */
+  private static long getFirstPrimeFactor (long num)  {
+    if (num <= 1)
+        throw new IllegalArgumentException("Found: " + num + ". Expected an integer greater than 1.");
+        
+    // Iterate from 2 up to the square root of num.
+    // For each potential factor, check if it's prime. If it is, check if num is evenly divisible by it.
+    // If so, return it.
+    for (long potentialFactor=2; (potentialFactor * potentialFactor) <= num; potentialFactor++) {
+	    if (isPrime(potentialFactor) && (num % potentialFactor == 0))
+	        return potentialFactor;
+    }
+    return 0;   // This should never happen, since every number greater than 1 has at least one prime factor.
   }
 
-  // Question 4
+  /**
+  * Question 4
+  * Implement Euclid’s algorithm.
+  *
+  * We calculate the highest common factor (aka the greatest common divisor) of two numbers
+  * by successively calculating one number modulo the other number until the modulo is zero.
+  * Each input number must be an integer greater than 0;
+  */
   public static long getHighestCommonFactor (long num1, long num2)
   {
     if (num1 < 1 || num2 < 1)
-      return 0;
+      throw new IllegalArgumentException("Found: (" + num1 +", " + num2 
+        + "). Expected both numbers to be greater than zero.");
 
     long x = num1;
     long y = num2;
 
-    while (y != 0)
-      {
-	long r = x % y;
-	x = y;
-	y = r;
-      }
+    while (y != 0) {
+	    long r = x % y;
+      x = y;
+      y = r;
+    }
     return x;
   }
 
-  // Question 5
-  public static long getModularInverse (long num, long modulus)
+  /*
+  * Question 5
+  * Explain how Euclid’s algorithm might help you to find multiplicative inverses and implement it.
+  *
+  * Returns the multiplicative inverse of num modulo the modulus,
+  * or returns 0 if the num does not have an inverse.
+
+  @TODO: results don't match with https://planetcalc.com/3311/ for large numbers, need to debug
+  */
+  public static long getModularInverse(long num, long modulus)
   {
     // num and modulus must be co-prime
-    if (getHighestCommonFactor (num, modulus) != 1)
+    if (getHighestCommonFactor(num, modulus) != 1)
       return 0;
 
     long r0 = modulus;
@@ -241,21 +288,16 @@ class Main
     long inverseMod = t1;
     long remainder = r1;
 
-    while (remainder != 1l)
-      {
-	long quotient = r0 / r1;	// truncated to whole number
-//System.out.println("\tquotient of " + r0 + "/" + r1 + "=" + quotient);          
-	remainder = r0 % r1;
-//System.out.println("\tremainder of " + r0 + "%" + r1 + "=" + remainder);
-	inverseMod = t0 - (quotient * t1);
-//System.out.println("\tinverseMod of " + t0 + "-(" + quotient + "*" + t1 + ")=" + inverseMod);
+    while (remainder != 1l) {
+	    long quotient = r0 / r1;	// r0 divided by r1, then truncated to whole number
+      remainder = r0 % r1;
+      inverseMod = t0 - (quotient * t1);
 
-	r0 = r1;
-	r1 = remainder;
-	t0 = t1;
-	t1 = inverseMod;
-      }
-
+      r0 = r1;
+      r1 = remainder;
+      t0 = t1;
+      t1 = inverseMod;
+    }
     return (inverseMod >= 0 ? inverseMod : inverseMod + modulus);
   }
 
