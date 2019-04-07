@@ -3,7 +3,7 @@
 Kim Rader
 COMP-530 Cryptographic Systems Security
 University of Nicosia
-March 4, 2019
+March 6, 2019
 Assignment 1 - The RSA Algorithm
 On GitHub as https://github.com/kimbor/RSA_programming_assignment
 *******************************************************************************/
@@ -12,22 +12,13 @@ import java.util.*;
 import java.math.BigInteger;
 
 class Main {
-	// Numbers used in tests for Questions 1, 2, 3.
-	// note: last character of 5915587277l is the letter 'l' to cast it
-	// as a long since the number is too big to fit in an int
-	public static final long[] numbersToTest = { -3, 2, 5, 9, 12, 3169, 10000 };
-//    long[] numbersToTest = { -3, 2, 5, 9, 12, 3169, 10000, 5915587277l };
-
-	// Numbers used in tests for Questions 4 and 5
-	// note: last character of larger number is the letter 'l' to cast them as longs
-	public static final long[][] pairsOfNumbersToTest = {
-//    {15, 26}, {1, 5}, {5, 6}, {6, 9} };
-			{ 15, 26 }, { 1, 5 }, { 6, 9 }, { 342952340l, 4230493243l }, { 499017086208l, 676126714752l },
-			{ 5988737349l, 578354589l } };
-// {342952340l, 4230493243l},
-
 	public static void main(String[] args) {
-		// Test for Question 1
+		// Numbers used in tests for Questions 1, 2, 3.
+		// note: last character of 5915587277l is the letter 'l' to cast it
+		// as a long since the number is too big to fit in an int
+	    long[] numbersToTest = { -3, 2, 5, 9, 12, 3169, 10000, 5915587277l };
+
+	    // Test for Question 1
 		System.out.println("\nQuestion 1: Test for primeness using trial and error method.");
 		for (int i = 0; i < numbersToTest.length; i++) {
 			long startTime = System.nanoTime();
@@ -56,6 +47,12 @@ class Main {
 			System.out.println("  Elapsed time: " + (endTime - startTime));
 		}
 
+		// Numbers used in tests for Questions 4 and 5
+		// note: last character of larger numbers is the letter 'l' to cast them as longs
+		long[][] pairsOfNumbersToTest = {
+			{15, 26}, {1, 5}, {6, 9}, {342952340l, 4230493243l}, 
+			{499017086208l, 676126714752l}, {5988737349l, 578354589l} };
+		
 		// Test for Question 4
 		System.out.println("\nQuestion 4: Implement Euclid’s algorithm "
 				+ " and compute hcf(499017086208, 676126714752), hcf(5988737349, 578354589)");
@@ -71,50 +68,57 @@ class Main {
 		// Test for Question 5
 		System.out.println(
 				"\nQuestion 5: Explain how Euclid’s algorithm might help you to find multiplicative inverses and implement it. "
-						+ "Solve for x the linear congruence 342952340x=1 mod4230493243");
+						+ "Solve for x the linear congruence 342952340x=1 mod 4230493243");
 		for (int i = 0; i < pairsOfNumbersToTest.length; i++) {
 			long startTime = System.nanoTime();
-			System.out.print(pairsOfNumbersToTest[i][0] + "^(-1) mod " + pairsOfNumbersToTest[i][1] + " = ");
+			System.out.print(pairsOfNumbersToTest[i][0] + "^(-1) mod " + pairsOfNumbersToTest[i][1]);
 			long modInverse = getModularInverse(pairsOfNumbersToTest[i][0], pairsOfNumbersToTest[i][1]);
 			if (modInverse == 0)
-				System.out.print("does not exist");
+				System.out.print(" does not exist");
 			else
-				System.out.print(modInverse);
+				System.out.print(" = " + modInverse);
 			long endTime = System.nanoTime();
 			System.out.println("  Elapsed time: " + (endTime - startTime));
 		}
 
-		// long[] numbersToTest = {31, 2773, 17, 157};
-		// for (int i=0; i<numbersToTest.length-1; i+=4) {
-		// long startTime = System.nanoTime();
-		// long cypherText = rsaEncrypt(numbersToTest[i], numbersToTest[i+1],
-		// (int)numbersToTest[i+2]);
-		// System.out.print("Cyphertext of " + numbersToTest[i] + " using public key ("
-		// + numbersToTest[i+1] + ", " + numbersToTest[i+2] + ") = " + cypherText);
-		// long endTime = System.nanoTime();
-		// System.out.println(" Elapsed time: " + (endTime - startTime));
-
-		// startTime = System.nanoTime();
-		// System.out.print("Decryption of " + cypherText + " using public key (" +
-		// numbersToTest[i+1] + ") and private key " + numbersToTest[i+3] + " = " +
-		// rsaDecryptWithPrivateKey(cypherText, numbersToTest[i+1],
-		// numbersToTest[i+3]));
-		// endTime = System.nanoTime();
-		// System.out.println(" Elapsed time: " + (endTime - startTime));
-
-		// startTime = System.nanoTime();
-		// System.out.print("Decryption of " + cypherText + " using public key (" +
-		// numbersToTest[i+1] + ", " + numbersToTest[i+2] + ") = " +
-		// rsaDecryptWithPublicKey(cypherText, numbersToTest[i+1], numbersToTest[i+2]));
-		// endTime = System.nanoTime();
-		// System.out.println(" Elapsed time: " + (endTime - startTime));
-		// }
+		// data used in tests for Question 6
+		class RsaKey {
+			public long publicKeyN;
+			public int publicKeyE;
+			RsaKey(long publicKeyN, int publicKeyE) {this.publicKeyN=publicKeyN; this.publicKeyE=publicKeyE;}
+		}
+		RsaKey[] keysToTest = { new RsaKey(2773, 17), new RsaKey(937513, 638471) };
+		long[] messagesToTest = {31, 32};
+		
+		// Test for Question 6
+		System.out.println("\nQuestion 6: Write a program to convert an encrypted number c = m^e (mod n) "
+				+ "into the original m =c^d (mod n), where 0 < m < n is some integer. ");
+		System.out.println("Pick any plaintext you would like to encrypt it using the public key (937513, 638471) "
+				+ "and then check correctness of the algorithm.");
+		for (int i = 0; i < keysToTest.length; i++) {
+			for (int j=0; j < messagesToTest.length; j++) {
+				System.out.print("Cyphertext of " + messagesToTest[j] 
+						+ " using public key (" + keysToTest[i].publicKeyN + ", " + keysToTest[i].publicKeyE + ") = ");
+				long startTime = System.nanoTime();
+				long cypherText = rsaEncrypt(messagesToTest[j], keysToTest[i].publicKeyN, keysToTest[i].publicKeyE);
+				long endTime = System.nanoTime();
+				System.out.print(cypherText);
+				System.out.println(" Elapsed time: " + (endTime - startTime));
+	
+				startTime = System.nanoTime();
+				System.out.print("Decryption of " + cypherText 
+						+ " using public key (" + keysToTest[i].publicKeyN + ", " + keysToTest[i].publicKeyE + ") = ");
+				endTime = System.nanoTime();
+				System.out.print(rsaDecryptWithPublicKey(cypherText, keysToTest[i].publicKeyN, keysToTest[i].publicKeyE));
+				System.out.println(" Elapsed time: " + (endTime - startTime));
+			}
+		}
 	}
 
 	/**
- * Question 1 
- * A number p is defined as prime if and only if it is divisible by itself (and 1). 
- * Implement a method from scratch that allows to test primality of a number using trial and error method. 
+	 * Question 1 
+	 * A number p is defined as prime if and only if it is divisible by itself (and 1). 
+	 * Implement a method from scratch that allows to test primality of a number using trial and error method. 
 	 */
 	public static boolean isPrimeTrialAndError(long num) {
 		// negative numbers, 0, and 1 are not considered prime by definition
@@ -133,15 +137,15 @@ class Main {
 	}
 
 	/**
- * Question 2 
- * The technique that you used in the previous question is a bit a slow 
- * if you consider a big enough number (e.g. 10-digits). 
- * Can you think of any other way to improve it? Implement the new one. 
+	 * Question 2 
+	 * The technique that you used in the previous question is a bit a slow 
+	 * if you consider a big enough number (e.g. 10-digits). 
+	 * Can you think of any other way to improve it? Implement the new one. 
 	 * 
- * This method improves the efficiency of the isPrimeTrialAndError function in two ways:
- * -only check potential factors up to the square root of the number
- * -only check potential factors that are themselves prime
- * This method is based on the Sieve of Erastothenes algorithm.
+	 * This method improves the efficiency of the isPrimeTrialAndError function in two ways:
+	 * -only check potential factors up to the square root of the number
+	 * -only check potential factors that are themselves prime
+	 * This method is based on the Sieve of Erastothenes algorithm.
 	 */
 	public static boolean isPrime(long num) {
 		// negative numbers, 0, and 1 are not considered prime by definition
@@ -155,7 +159,7 @@ class Main {
 		for (long potentialFactor = 2; (potentialFactor * potentialFactor) <= num; potentialFactor++) {
 			if (isPrimeHelper(potentialFactor, knownPrimes)) {
 				knownPrimes.add(potentialFactor);
-				if (num % potentialFactor == 0)
+				if (num % potentialFactor == 0)		// % is modulus operator
 					return false;
 			}
 		}
@@ -163,13 +167,13 @@ class Main {
 	}
 
 	/**
- * Helper method for isPrime(long), written for Question 2.
- * num must be an integer greater than 1
- * knownPrimes must contain all primes up to the square root of num
+	 * Helper method for isPrime(long), written for Question 2.
+	 * num must be an integer greater than 1
+	 * knownPrimes must contain all primes up to the square root of num
 	 */
 	private static boolean isPrimeHelper(long num, List<Long> knownPrimes) {
 		for (long primeFactor : knownPrimes) {
-			if (num % primeFactor == 0)
+			if (num % primeFactor == 0)		// % is modulus operator
 				return false;
 			if (primeFactor * primeFactor > num)
 				return true;
@@ -209,11 +213,11 @@ class Main {
 	}
 
 	/**
-   * Helper method for Question 3, also used by __ below.
-   * Finds the prime factors of num;
-   * If a factor occurs more than once, it will be returned more than once.
-   * e.g. getPrimeFactors(12) => [2, 2, 3];
-   * If num is less than 2, returns an empty list.
+	 * Helper method for Question 3, also used by getPrivateKey(long,long) below.
+	 * Finds the prime factors of num;
+	 * If a factor occurs more than once, it will be returned more than once.
+	 * e.g. getPrimeFactors(12) => [2, 2, 3];
+	 * If num is less than 2, returns an empty list.
 	 */
 	private static List<Long> getPrimeFactors(long num) {
 		List<Long> knownFactors = new ArrayList<Long>();
@@ -238,15 +242,14 @@ class Main {
      * Finds the smallest prime factor of num.
 	 */
 	private static long getFirstPrimeFactor(long num) {
-		if (num <= 1)
-			throw new IllegalArgumentException("Found: " + num + ". Expected an integer greater than 1.");
+		assert num > 1 : "Found: " + num + ". Expected an integer greater than 1.";
 
 		// Iterate from 2 up to the square root of num.
 		// For each potential factor, check if it's prime. If it is, check if num is
 		// evenly divisible by it.
 		// If so, return it.
 		for (long potentialFactor = 2; (potentialFactor * potentialFactor) <= num; potentialFactor++) {
-			if (isPrime(potentialFactor) && (num % potentialFactor == 0))
+			if (isPrime(potentialFactor) && (num % potentialFactor == 0))	// % is modulus operator
 				return potentialFactor;
 		}
 		return 0; // This should never happen, since every number greater than 1 has at least one
@@ -254,53 +257,53 @@ class Main {
 	}
 
 	/**
-  * Question 4
-  * Implement Euclid’s algorithm.
+	 * Question 4
+	 * Implement Euclid’s algorithm.
 	 *
-  * We calculate the highest common factor (aka the greatest common divisor) of two numbers
-  * by successively calculating one number modulo the other number until the modulo is zero.
-  * Each input number must be an integer greater than 0;
+	 * We calculate the highest common factor (aka the greatest common divisor) of two numbers
+	 * by successively calculating one number modulo the other number until the result is zero.
+	 * Each input number must be an integer greater than 0;
 	 */
 	public static long getHighestCommonFactor(long num1, long num2) {
-		if (num1 < 1 || num2 < 1)
-			throw new IllegalArgumentException(
-					"Found: (" + num1 + ", " + num2 + "). Expected both numbers to be greater than zero.");
+		assert (num1 > 0 && num2 > 0) :	"Found: (" + num1 + ", " + num2 + "). Expected both numbers to be greater than zero.";
 
-		long x = num1;
-		long y = num2;
+		long r0 = num1;
+		long r1 = num2;
 
-		while (y != 0) {
-			long r = x % y;
-			x = y;
-			y = r;
+		while (r1 != 0) {
+			long r = r0 % r1;	// % is modulus operator
+			r0 = r1;
+			r1 = r;
 		}
-		return x;
+		return r0;
 	}
 
-	/*
-  * Question 5
-  * Explain how Euclid’s algorithm might help you to find multiplicative inverses and implement it.
+	/**
+	 * Question 5
+	 * Explain how Euclid’s algorithm might help you to find multiplicative inverses and implement it.
 	 *
-	 * Returns the multiplicative inverse of num modulo the modulus, 
-	 * or returns 0 if the num does not have an inverse.
+	 * Returns the multiplicative inverse of [num] modulo [modulus], 
+	 * or returns 0 if num does not have an inverse.
 	 * 
+	 * This is essentially the same algorithm as Euclid's algorithm as implemented in getHighestCommonFactor(long, long) above
+	 * except that instead of just keeping track of remainders we also keep track of quotients.
 	 */
 	public static long getModularInverse(long num, long modulus) {
 		// num and modulus must be co-prime
 		if (getHighestCommonFactor(num, modulus) != 1)
 			return 0;	// if they are not co-prime, there is no multiplicative inverse, so return zero
 
-		long r0 = modulus;	// r0 is 
+		long r0 = modulus; 
 		long r1 = num;
-		long t0 = 0l;
-		long t1 = 1l;
+		long t0 = 0;
+		long t1 = 1;
 
 		long inverseMod = t1;
 		long remainder = r1;
 
-		while (remainder != 1l) {
-			long quotient = r0 / r1; // r0 divided by r1, then truncated to whole number
-			remainder = r0 % r1;
+		while (remainder != 1) {
+			long quotient = r0 / r1; 	// r0 divided by r1, then truncated to whole number
+			remainder = r0 % r1;		// % is modulus operator
 			inverseMod = t0 - (quotient * t1);
 
 			r0 = r1;
@@ -308,23 +311,32 @@ class Main {
 			t0 = t1;
 			t1 = inverseMod;
 		}
-		return (inverseMod >= 0 ? inverseMod : inverseMod + modulus);	// if result is less than zero, add modulus to it
+		
+		// if result is less than zero, add modulus to it to make positive and return
+		// otherwise just return result
+		return (inverseMod >= 0 ? inverseMod : inverseMod + modulus);
 	}
 
-	// Question 6
-	public static long rsaEncrypt(long message, long publicKeyN, long publicKeyE) {
-		// we use BigInteger arithmetic here in order to avoid rounding during some of
-		// the math operations
+	/**
+	 * Question 6
+	 * Write a program to convert an encrypted number c = m^e (mod n) 
+	 * into the original m = c^d (mod n), where 0 < m < n is some integer. 
+	 */
+	public static long rsaEncrypt(long message, long publicKeyN, int publicKeyE) {
+		assert(publicKeyE > 0);
+		assert(publicKeyN > publicKeyE);
+		
+		// we use BigInteger instead of long here in order to avoid rounding of large numbers
+		// during some of the math operations
 		BigInteger messageBI = BigInteger.valueOf(message);
 		BigInteger publicKeyNBI = BigInteger.valueOf(publicKeyN);
-		// System.out.println("\t" + message + "^" + publicKeyE + "=" +
-		// messageBI.pow(publicKeyE));
-		// System.out.println("\t" + message + "^" + publicKeyE + " mod " + publicKeyN +
-		// "=" + messageBI.pow(publicKeyE).mod(publicKeyNBI));
-		return messageBI.pow((int) publicKeyE).mod(publicKeyNBI).longValue();
+
+		return messageBI.pow(publicKeyE).mod(publicKeyNBI).longValue();	// message^publicKeyE mod publicKeyN
 	}
 
 	public static long rsaDecryptWithPrivateKey(long cypherText, long publicKeyN, long privateKeyD) {
+		// we use BigInteger instead of long here in order to avoid rounding of large numbers
+		// during some of the math operations
 		BigInteger cypherBI = BigInteger.valueOf(cypherText);
 		BigInteger publicKeyNBI = BigInteger.valueOf(publicKeyN);
 
@@ -332,13 +344,23 @@ class Main {
 	}
 
 	public static long rsaDecryptWithPublicKey(long cypherText, long publicKeyN, long publicKeyE) {
-		return rsaDecryptWithPrivateKey(cypherText, publicKeyN, getPrivateKeyD(publicKeyN, publicKeyE));
+		return rsaDecryptWithPrivateKey(cypherText, publicKeyN, getPrivateKey(publicKeyN, publicKeyE));
 	}
 
-	public static long getPrivateKeyD(long publicKeyN, long publicKeyE) {
+	/**
+	 * Question 7
+	 * Can you describe how question 5 might be used to break RSA algorithm 
+	 * and recover the secret key?
+	 * 
+	 * This method uses the getModularInverse method from question 5 
+	 * to calculate the RSA private key from an RSA public key pair.
+	 * It successfully breaks RSA encryption for smaller public key values.
+	 * However, for larger public key values it would take too long to execute to be practical,
+	 * at least using currently available hardware.
+	 */
+	public static long getPrivateKey(long publicKeyN, long publicKeyE) {
 		List<Long> primeFactors = getPrimeFactors(publicKeyN);
-		if (primeFactors.size() != 2)
-			throw new IllegalArgumentException("publicKeyN " + publicKeyN + " must be a product of 2 primes");
+		assert primeFactors.size() == 2 : "publicKeyN " + publicKeyN + " must be a product of 2 primes";
 
 		long p = primeFactors.get(0).longValue();
 		long q = primeFactors.get(1).longValue();
